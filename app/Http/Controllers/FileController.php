@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\File;
 use Illuminate\Support\Facades\Storage;
-use Aws\S3\S3Client as S3Client;
+use App\Http\Helpers\MinIOHandler;
 
 class FileController extends Controller
 {
@@ -75,24 +75,16 @@ class FileController extends Controller
      * Display the specified resource.
      */
     public function show()
-    {
-        $minio_access_key = env('MINIO_ACCESS_KEY_ID');
-        $minio_secret_key = env('MINIO_SECRET_ACCESS_KEY');
-        $minio_bucket = env('MINIO_BUCKET');
-        $minio_endpoint = env('MINIO_ENDPOINT');
+    {        // $minio_access_key = env('MINIO_ACCESS_KEY_ID');
+        // $minio_secret_key = env('MINIO_SECRET_ACCESS_KEY');
+        // $minio_bucket = env('MINIO_BUCKET');
+        // $minio_endpoint = env('MINIO_ENDPOINT');
         $object_name = 'test.png';
+        $minio_bucket = config('filesystems.disks.s3.bucket');
+
+        $client = MinIOHandler::createClient();
 
 
-        $client = new S3Client([
-            'version' => 'latest',
-            'region' => 'us-east-1',
-            'endpoint' => $minio_endpoint,
-            'use_path_style_endpoint' => true,
-            'credentials' => [
-                'key' => $minio_access_key,
-                'secret' => $minio_secret_key,
-            ],
-        ]);
 
         return response()->json(
             [
