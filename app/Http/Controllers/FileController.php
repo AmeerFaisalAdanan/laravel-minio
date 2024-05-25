@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\File;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Helpers\MinIOHandler;
+// use App\Http\Helpers\MinIOHandler;
+use Aws\S3\S3Client as S3Client;
 
 class FileController extends Controller
 {
@@ -31,20 +32,22 @@ class FileController extends Controller
     public function store(Request $request)
     {
 
-        $minio_access_key = env('MINIO_ACCESS_KEY_ID');
-        $minio_secret_key = env('MINIO_SECRET_ACCESS_KEY');
-        $minio_bucket = env('MINIO_BUCKET');
-        $minio_endpoint = env('MINIO_ENDPOINT');
+        $minio_access_key = config('filesystems.disks.s3.key');
+        $minio_secret_key = config('filesystems.disks.s3.secret');
+        $minio_bucket = config('filesystems.disks.s3.bucket');
+        $minio_endpoint = config('filesystems.disks.s3.endpoint');
+        $use_path_style_endpoint = config('filesystems.disks.s3.use_path_style_endpoint');
         // $object_name = 'test.png';
 
         $file = $request->file('file');
+        // dd($minio_endpoint);
 
 
         $client = new S3Client([
             'version' => 'latest',
-            'region' => 'us-east-1',
+            'region' => 'my-central-1',
             'endpoint' => $minio_endpoint,
-            'use_path_style_endpoint' => false,
+            'use_path_style_endpoint' => true,
             'credentials' => [
                 'key' => $minio_access_key,
                 'secret' => $minio_secret_key,
@@ -79,10 +82,30 @@ class FileController extends Controller
         // $minio_secret_key = env('MINIO_SECRET_ACCESS_KEY');
         // $minio_bucket = env('MINIO_BUCKET');
         // $minio_endpoint = env('MINIO_ENDPOINT');
-        $object_name = 'test.png';
+
+        $minio_access_key = config('filesystems.disks.s3.key');
+        $minio_secret_key = config('filesystems.disks.s3.secret');
+
+        $minio_endpoint = config('filesystems.disks.s3.endpoint');
+        $minio_region = config('filesystems.disks.s3.region');
+        $minio_use_path_style_endpoint = config('filesystems.disks.s3.use_path_style_endpoint');
+        $object_name = 'tewst.png';
         $minio_bucket = config('filesystems.disks.s3.bucket');
 
-        $client = MinIOHandler::createClient();
+        // $client = MinIOHandler::createClient();
+
+        $client = new S3Client([
+            'version' => 'latest',
+            'region' => 'us-east-1',
+            'endpoint' => $minio_endpoint,
+            'use_path_style_endpoint' => true,
+            'credentials' => [
+                'key' => $minio_access_key,
+                'secret' => $minio_secret_key,
+            ],
+        ]);
+
+        dd($client->getObjectUrl($minio_bucket, $object_name));
 
 
 
