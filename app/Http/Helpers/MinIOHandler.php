@@ -27,10 +27,25 @@ class MinIOHandler
                 'secret' => $minio_secret_key,
             ],
             'http' => [
-                'verify' => false
+                'verify' => true
             ],
             // 'bucket' => $minio_bucket,
         ]);
+
+    }
+
+    public static function uploadFile($file, $object_name){
+
+        $client = self::createClient();
+
+        $result = $client->putObject([
+            'Bucket' => config('filesystems.disks.s3.bucket'),
+            'Key' => $object_name,
+            'Body' => fopen($file, 'r'),
+            'ACL' => 'public-read'
+        ]);
+
+        return $result;
 
     }
 
