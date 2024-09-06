@@ -1,5 +1,9 @@
 ### a test repo to learn on how to use minio (with docker)
 
+Install s3 plugin using composer 
+
+``` composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies ```
+
 ##### Configure minio bucket
 
 1. login to the bucket. uname: minio, pw: minio123
