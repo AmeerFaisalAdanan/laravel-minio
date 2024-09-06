@@ -1,0 +1,77 @@
+services:
+
+  laravel:
+    build: 
+      dockerfile: ./docker/php/Dockerfile.php
+    container_name: laravel
+    working_dir: /var/www/laravel
+    user: "1000:1000"
+    volumes:
+      - ./apps:/var/www/laravel
+      # - ./apps/vendor:/var/www/laravel/vendor
+    networks:
+      - laravel-network
+    ports:
+      - "9000:9000"
+
+  laravel-webserver-dev:
+    image: nginx:alpine
+    container_name: laravel-webserver
+    volumes:
+      - ./apps:/var/www/laravel
+      - ./docker/nginx/api-dev.conf:/etc/nginx/conf.d/api.conf
+      # - ./docker/nginx/bucket-dev.conf:/etc/nginx/conf.d/bucket.conf
+      
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - laravel
+    networks:
+      - laravel-network
+    profiles:
+      - development
+
+  db:
+    image: postgres:15
+    container_name: laravel_db
+    restart: always
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - laravel-network
+
+  laravel-minio:
+    image: minio/minio
+    container_name: laravel-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_DEFAULT_BUCKETS: laravelbucket
+    volumes:
+      - miniostorage:/data
+    ports:
+      - "9001:9000"
+      - "9002:9001"
+    networks:
+      - laravel-network
+    restart: always
+
+volumes:
+  miniostorage:
+    driver: local
+  db_data:
+    driver: local
+
+networks:
+  laravel-network:
+    driver: bridge
+
+

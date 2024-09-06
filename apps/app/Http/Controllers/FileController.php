@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\File;
 use Illuminate\Support\Facades\Storage;
-// use App\Http\Helpers\MinIOHandler;
+use App\Http\Helpers\MinIOHandler;
 use Aws\S3\S3Client as S3Client;
 
 class FileController extends Controller
