@@ -23,11 +23,13 @@ jobs:
         extensions: mbstring
         tools: composer
 
-    # Install dependencies
-    - name: Install Dependencies
-      run: composer install --no-scripts --no-interaction --prefer-dist
+    # Install dependencies inside the app directory
+    - name: Install Dependencies in App Directory
+      run: |
+        cd app
+        composer install --no-scripts --no-interaction --prefer-dist
 
-    # Run PHP CodeSniffer
+    # Run PHP CodeSniffer on the app directory only
     - name: Run PHP CodeSniffer
       run: |
         vendor/bin/phpcs --standard=PSR12 app/
