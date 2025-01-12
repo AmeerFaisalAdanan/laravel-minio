@@ -1,0 +1,33 @@
+name: PHP CodeSniffer
+
+on:
+  push:     # Triggers on any push event
+    branches: 
+      - '**'  # Matches any branch
+  pull_request: # Triggers on pull requests
+
+jobs:
+  code-sniffer:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Set up PHP
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3' # Adjust to your PHP version
+        extensions: mbstring
+        tools: composer
+
+    # Install dependencies
+    - name: Install Dependencies
+      run: composer install --no-scripts --no-interaction --prefer-dist
+
+    # Run PHP CodeSniffer
+    - name: Run PHP CodeSniffer
+      run: |
+        vendor/bin/phpcs --standard=PSR12 app/
